@@ -1,24 +1,16 @@
 #!/usr/bin/env python3, this gives an invalid syntax if # is taken off, dont know what this does ask the professor on Monday
 import math
 import numpy
+#import os
 
 class Muons:
 	count=0
 	
-	def __init__(self, P1, P2):#, M):
+	def __init__(self, P1, P2, M):
 		self.P1=P1
 		self.P2=P2
-		#self.M=M
+		self.M=M
 		Muons.count +=1
-
-	#def invarmass (self, P14, P24, m1, m2):
-	#def invarmass(self, Pt1, Pt2, eta1, eta2, phi1, phi2)
-		P1=P14[0]
-		P13=P14[1:3]
-		P2=P24[0]
-		P23=P24[1:3]
-		#return math.sqrt(2*Pt1*Pt2*(math.cosh(eta1-eta2)-math.cos(phi1-phi2)))
-		return math.sqrt(m1**2+m2**2+2*(P1*P2-(numpy.dot(P13,P23))))
 	
 	def displayCount(self):
 		print("Number of trials %d" % Muons.count)
@@ -26,6 +18,11 @@ class Muons:
 	def displayMuons(self):
 		print ("{0}{1}, {2}{3}, {4}{5}".format('4-momentum for Muon#1 = ', self.P1, '4-momentum for Muon#2 = ', self.P2, 'With invariant M = ', self.M))#not sure what was meant by nice formatted printouts
 
+	def __str__(self):
+		rv = "Muon#1: 4-momentum is " + print(P1) + "\n"
+		rv += "Muon#2: 4-momentum is " + print(P2) + "\n"
+		rv += "Invarient Mass is=" + M
+		return rv
 
 
 
@@ -37,15 +34,18 @@ class Particle:
 		self.eta=float(l1[3])
 		self.phi=float(l1[4])
 		self.m=float(l1[5])
+		
 
-#	def pxhat(self, Pt, phi):
-		#return Pt*math.cos(phi)
-	#def pyhat(self, Pt, phi):
-		#return Pt*math.sin(phi)
-	#def pzhat(self, Pt, eta):
-		#return Pt*math.sinh(eta)
-#	def E(self, Pt, eta):
-	#	return Pt*math.cosh(eta)
+
+	def pxhat(self):
+		return self.Pt*math.cos(self.phi)
+	def pyhat(self):
+		return self.Pt*math.sin(self.phi)
+	def pzhat(self):
+		return self.Pt*math.sinh(self.eta)
+	def E(self):
+		return self.Pt*math.cosh(self.eta)
+
 	def eandp (self):
 		Px=self.Pt*math.cos(self.phi)
 		Py=self.Pt*math.sin(self.phi)
@@ -77,7 +77,7 @@ class Particle:
 		P2=P24[0]
 		P23=P24[1:3]
 		#return math.sqrt(2*Pt1*Pt2*(math.cosh(eta1-eta2)-math.cos(phi1-phi2)))
-		return math.sqrt(m1**2+m2**2+2*(P1*P2-(numpy.dot(P13,P23))))
+		return math.sqrt(m1**2+m2**2+2*(P1*P2-(numpy.dot(P13,P23))))#by hand calc is off by +/- 10, most likely due to my rounding, so I think it is fairly accurate
 
 a=0
 n=1
@@ -98,7 +98,6 @@ with open('muons3.txt') as f:
 	lines=f.readlines()
 for line in lines[0::2]:
 	
-	#print(f'{line}'+'\n'+f'{lines[n]}')
 	Enp=Particle(f'{line}')
 	Pt1=Enp.eandp()[5]
 	m1=Enp.eandp()[4]
@@ -110,15 +109,13 @@ for line in lines[0::2]:
 	n=n+2
 	Pt2=Enp.eandp()[5]
 	m2=Enp.eandp()[4]
-	print(m1)
 	P24=Enp.eandp()[:-4]
 	#phi2=Enp.eandp()[6]
 	#eta2=Enp.eandp()[7]
 #	invM=Enp.testinvm(P14,P24,Pt1,Pt2,m1,m2,phi1,phi2,eta1,eta2)
 	invM=Enp.invarmass(P14,P24,m1,m2)
 	#invM=Enp.invarmass(Pt1,Pt2,eta1,eta2,phi1,phi2)
-	p2p=Muons(P14,P24)
-	#invM=Muons.invarmass(P14,P24,m1,m2)
+	p2p=Muons(P14,P24,invM)
 	p2p.displayMuons()
 	a=a+1	
-	fo.write("{0}{1}, {2}{3}{4}".format('For trial#', a , 'The invariant mass is ', invM, '\n%'))
+	fo.write("{0}{1}, {2}{3}{4}".format('For trial#', a , 'The invariant mass is ', invM, '\n'))
